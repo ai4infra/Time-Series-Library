@@ -31,14 +31,14 @@ class EarlyStopping:
         self.counter = 0
         self.best_score = None
         self.early_stop = False
-        self.test_loss_min = np.Inf
+        self.vali_loss_min = np.Inf
         self.delta = delta
 
-    def __call__(self, test_loss, model, path):
-        score = -test_loss
+    def __call__(self, vali_loss, model, path):
+        score = -vali_loss
         if self.best_score is None:
             self.best_score = score
-            self.save_checkpoint(test_loss, model, path)
+            self.save_checkpoint(vali_loss, model, path)
         elif score < self.best_score + self.delta:
             self.counter += 1
             print(f'EarlyStopping counter: {self.counter} out of {self.patience}')
@@ -46,14 +46,14 @@ class EarlyStopping:
                 self.early_stop = True
         else:
             self.best_score = score
-            self.save_checkpoint(test_loss, model, path)
+            self.save_checkpoint(vali_loss, model, path)
             self.counter = 0
 
-    def save_checkpoint(self, test_loss, model, path):
+    def save_checkpoint(self, vali_loss, model, path):
         if self.verbose:
-            print(f'Validation loss decreased ({self.test_loss_min:.6f} --> {test_loss:.6f}).  Saving model ...')
+            print(f'Validation loss decreased ({self.vali_loss_min:.6f} --> {vali_loss:.6f}).  Saving model ...')
         torch.save(model.state_dict(), path + '/' + 'checkpoint.pth')
-        self.test_loss_min = test_loss
+        self.vali_loss_min = vali_loss
 
 
 class dotdict(dict):
